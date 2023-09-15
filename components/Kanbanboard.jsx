@@ -3,27 +3,13 @@ import { DragDropContext } from 'react-beautiful-dnd';
 import Column from './Column';
 import supabase from '@/config/supabase';
 
-export default function KanbanBoard() {
-  const [completed, setCompleted] = useState([]);
-  const [incomplete, setIncomplete] = useState([]);
-  const fetchData = async () => {
-    let { data, error } = await supabase.from('kanban').select('*');
-
-    if (error) {
-      alert('Error');
-      console.log(error);
-      setCompleted([]);
-      setIncomplete([]);
-      return;
-    }
-    console.log(data);
-    setCompleted(data.filter((task) => task.completed));
-    setIncomplete(data.filter((task) => !task.completed));
-  };
-  useEffect(() => {
-    fetchData();
-  }, []);
-
+export default function KanbanBoard({
+  completed,
+  setCompleted,
+  incomplete,
+  setIncomplete,
+  fetchData,
+}) {
   const handleDragEnd = async (result) => {
     const { destination, source, draggableId } = result;
 
@@ -78,8 +64,6 @@ export default function KanbanBoard() {
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
-      <h2 style={{ textAlign: 'center' }}>PROGRESS BOARD</h2>
-
       <div
         style={{
           display: 'flex',
