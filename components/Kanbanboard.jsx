@@ -30,35 +30,41 @@ export default function KanbanBoard() {
     if (source.droppableId == destination.droppableId) return;
 
     if (source.droppableId == 2) {
-      let { error } = await supabase
-        .from('kanban')
-        .delete()
-        .eq('id', draggableId);
-      if (!error) setCompleted(removeItemById(draggableId, completed));
+      // let { error } = await supabase
+      //   .from('kanban')
+      //   .delete()
+      //   .eq('id', draggableId);
+      // if (!error)
+      setCompleted(removeItemById(draggableId, completed));
     } else {
-      let { error } = await supabase
-        .from('kanban')
-        .delete()
-        .eq('id', draggableId);
-      if (!error) setIncomplete(removeItemById(draggableId, incomplete));
+      // let { error } = await supabase
+      //   .from('kanban')
+      //   .delete()
+      //   .eq('id', draggableId);
+      // if (!error)
+      setIncomplete(removeItemById(draggableId, incomplete));
     }
 
     const task = findItemById(draggableId, [...incomplete, ...completed]);
 
     if (destination.droppableId == 2) {
+      setCompleted([{ ...task, completed: !task.completed }, ...completed]);
+      const temp = completed;
       let { error } = await supabase
         .from('kanban')
         .update({ completed: !task.completed })
         .eq('id', task?.id);
-      if (!error)
-        setCompleted([{ ...task, completed: !task.completed }, ...completed]);
+      if (error) setCompleted([...temp]);
+      if (!error) fetchData();
     } else {
+      setIncomplete([{ ...task, completed: !task.completed }, ...incomplete]);
+      const temp = incomplete;
       let { error } = await supabase
         .from('kanban')
         .update({ completed: !task.completed })
         .eq('id', task?.id);
-      if (!error)
-        setIncomplete([{ ...task, completed: !task.completed }, ...incomplete]);
+      if (!error) setIncomplete([...temp]);
+      if (!error) fetchData();
     }
   };
 
@@ -84,7 +90,7 @@ export default function KanbanBoard() {
       >
         <Column title={'TO DO'} tasks={incomplete} id={'1'} />
         <Column title={'DONE'} tasks={completed} id={'2'} />
-        <Column title={'DELETE'} tasks={[]} id={'3'} />
+        {/* <Column title={'DELETE'} tasks={[]} id={'3'} /> */}
       </div>
     </DragDropContext>
   );
